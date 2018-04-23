@@ -6,5 +6,30 @@
 {% endblock %}
 
 {% block content %}
-    TASK
+
+    <div class="col-lg-12 text-right">
+        <button class="task-add btn btn-primary" data-toggle="modal"
+                data-target="#modal-add-task">Add task</button>
+    </div>
+
+    <div class="col-lg-12">
+        <div class="row task-panel">
+            {% for task in tasks %}
+                <div class="card">
+                    <div class="card-block">
+                        <h4 class="card-title">{{ task.name }}</h4>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ task.category }}</h6>
+                        <p class="card-text">{{ task.description }}</p>
+                        <p class="card-text">Deadline: {{ task.deadline }}</p>
+                        <p class="card-text">Author: {{ task.author }}</p>
+                        <p class="card-text">Performers: {{ task.get_performer }}</p>
+                        <a href="#" class="card-link">Card link</a>
+                        <a href="#" class="card-link">Another link</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
 {% endblock %}

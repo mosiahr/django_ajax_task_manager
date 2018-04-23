@@ -1,0 +1,5 @@
+bootstrap-4.0.0
+idea/*
+*.pyc
+__pycache__/*
+db.sqlite3
