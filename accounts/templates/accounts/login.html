@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content  %}
+<!--<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="login" /><br />
+    {# <a href="{% url "register" %}">Register an Account</a> #}
+    {# <a href="{% url "password_reset" %}">Can't Remember Password</a> #}
+</form> -->
+
+
+<form class="form-signin" action="." method="post">{% csrf_token %}
+	<h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+		{{ form.as_p }}
+	<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+</form>	
+
+{% endblock %}
