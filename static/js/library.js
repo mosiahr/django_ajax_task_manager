@@ -1,20 +1,5 @@
-// $.ajax({
-//     type: "GET",
-//     url: "/task/add/",
-//     data: {
-//         'task-name': $('#task-name').val()
-//     },
-//     dataType: "text",
-//     cache: false,
-//     success: function (data) {
-//         alert("OK");
-//         return true;
-//     }
-// });
-
-var tasks = {};
-
 $(document).ready(function() {
+    // Add Task
     var taskForm = $('#task-form');
 
     taskForm.submit(function(event) {
@@ -27,14 +12,6 @@ $(document).ready(function() {
             formDataArr[formData[key]['name']] = formData[key]['value'];
         }
 
-        console.log(formDataArr);
-        var randomId = Math.round(Math.random()*100000);
-        tasks[randomId] = formDataArr;
-        console.log(tasks);
-        
-
-
-
         var thisURL = taskForm.attr("data-url") || window.location.href;  // or set your own url
         console.log(thisURL);
 
@@ -46,29 +23,70 @@ $(document).ready(function() {
                 success: handleFormSuccess,
                 error: handleFormError,
             })
-            function handleFormSuccess(data, textStatus, jqXHR){
-                console.log(data)
-                console.log(textStatus)
-                console.log(jqXHR)
-                drawTask(randomId);
-                console.log(this.url);
-                $('#modal-add-task').modal('hide');
-                // $('.task-panel').load(this.url, '#task-panel');
-                taskForm[0].reset(); // reset form data
-            }
+        function handleFormSuccess(data, textStatus, jqXHR){
+            console.log(data)
+            console.log(textStatus)
+            console.log(jqXHR)
+            // drawTask(randomId);
+            console.log(this.url);
+            $('#modal-add-task').modal('hide');
+            taskForm[0].reset(); // reset form data
 
-            function handleFormError(jqXHR, textStatus, errorThrown){
-                console.log(jqXHR)
-                console.log(textStatus)
-                console.log(errorThrown)
-            }
+            setTaskDraw();
+        }
 
-
-
+        function handleFormError(jqXHR, textStatus, errorThrown){
+            console.log(jqXHR)
+            console.log(textStatus)
+            console.log(errorThrown)
+        }
 
     });
 
-    function drawTask(taskId){
+    // Add category
+    var categoryForm = $('#category-form');
+
+    categoryForm.submit(function(event) {
+        event.preventDefault();
+        var formDataCompany = $(this).serializeArray();
+        console.log(formDataCompany);
+
+        var formDataArr = [];
+        for (key in formDataCompany){
+            formDataArr[formDataCompany[key]['name']] = formDataCompany[key]['value'];
+        }
+        console.log(formDataArr);
+
+        var thisURL = categoryForm.attr("data-url");  // or set your own url
+        console.log(thisURL);
+
+        $.ajax({
+                method: "POST",
+                url: thisURL,    // '/task/add/category/'
+                data: formDataCompany,
+                success: handleFormSuccess,
+                error: handleFormError,
+            })
+
+        function handleFormSuccess(data, textStatus, jqXHR){
+            console.log(data)
+            console.log(textStatus)
+            console.log(jqXHR)
+            $('#modal-add-category').modal('hide');
+            categoryForm[0].reset(); // reset form data
+
+            setCategoryDraw();
+        }
+
+        function handleFormError(jqXHR, textStatus, errorThrown){
+            console.log(jqXHR)
+            console.log(textStatus)
+            console.log(errorThrown)
+        }
+
+    });
+
+    function drawTask(taskId, tasks){
         var div = document.createElement('div');
         div.className = 'card bg-light text-dark';
         div.setAttribute('data', taskId);
@@ -82,58 +100,123 @@ $(document).ready(function() {
         $('#task-panel').prepend(div);
     }
 
-    // setInterval(function () {
-    //     $.ajax({
-    //         url: "http://127.0.0.1:8000/task/json/",
-    //         type: 'POST',
-    //         data: {'check': true},
-            
-    //         success: function (data) {
-               
-    //             var obj = JSON.parse(data)
-    //             console.log(obj[0]['fields'])
-    //             // var arr =[];
-    //             // for( var i in obj) {
-    //             //     arr.push(obj[i]);
-    //             // }
-    //             // console.log(arr)
+    function setTaskDraw(){
+        $.ajax({
+            url: '/task/json/',
+            type: 'POST',
+            async: false,
+            data: {'check': true },
+        })
+        .done(function(data) {
+            var obj = JSON.parse(data);
+            var objArr = [];
+            for (key in obj){
+                objArr[obj[key]['pk']] = obj[key]['fields'];
+            }
+            drawTask((objArr.length-1), objArr);
+        })
+        .fail(function() {
+            console.log("error");
+        })
+    }
 
-    //             // // var arr = Object.keys(obj).map(function (key) { return obj[key]; });
-    //             // console.log(arr)
-    //             // console.log(JSON.parse(data))
-    //             // if (json.tasks) {
-    //             //     // $('#notify_icon').addClass("notification");
-    //             //     // var doc = $.parseHTML(json.notifications_list);
-    //             // $('#task-panel').html(obj);
+    function setCategoryDraw(){
+        $.ajax({
+            url: '/task/json/category/',
+            type: 'POST',
+            async: false,
+            // dataType: 'default: Intelligent Guess (Other values: xml, json, script, or html)',
+            data: {'check': true },
+        })
+        .done(function(data) {
+            var obj = JSON.parse(data);
+            var objArr = [];
+            for (key in obj){
+                objArr[obj[key]['pk']] = obj[key]['fields'];
+            }
+
+            drawCategory((objArr.length-1), objArr);
+        })
+        .fail(function() {
+            console.log("error");
+        })
+    }
+
+    function drawCategory(catId, categories){
+        var div = document.createElement('div');
+        div.className = 'form-check';
+        div.setAttribute('data', catId);
+
+        var input = document.createElement('input');
+        input.className = 'form-check-input';
+        input.type = 'checkbox';
+        input.id = 'cat-' + catId;
+
+        var label = document.createElement('label');
+        label.className = 'form-check-label';
+        label.for = 'cat-' + categories[catId]['name'];
+        label.innerHTML = categories[catId]['name'];
+
+        var hr = document.createElement('hr');
+
+        div.append(input);
+        div.append(label);
+        div.append(hr);
+
+        $('#category-panel').prepend(div);
+    }
 
 
-    //             $( "div#task-panel" ).html(function() {
-    //                 for( var i in obj) {
-    //                     var task = obj[0]['fields']['name']
+    //FILTER
+    var checkboxCat = $( ".form-check input:checkbox" );
+    checkboxCat.change(function(event) {
+        var catId = event.target.id.replace('cat-', '');
+        var catIdArr = []
+        
+        if (this.checked) {
+            var arrChecked = jQuery.grep(checkboxCat, function( e ) {
+                return ( e.checked == true );
+            });
+            for (key in arrChecked){
+                catIdArr.push(parseInt(arrChecked[key].id.replace('cat-', '')));
+            }
+            drawTaskAll(catIdArr, false);
+        } else {
+            var arrChecked = jQuery.grep(checkboxCat, function( e ) {
+                return ( e.checked == true );
+            });
+            for (key in arrChecked){
+                catIdArr.push(parseInt(arrChecked[key].id.replace('cat-', '')));
+            }
+            drawTaskAll(catIdArr, false);
+        }
+    });
 
-    //                     $("#task-name").append("<p>" + task + "</p>");
-    //                 }
+    function drawTaskAll(catIdArr, all=true){
+        $.ajax({
+                url: '/task/json/',
+                type: 'POST',
+                async: false,
+                data: {'check': true },
+            })
+            .done(function(data) {
+                var obj = JSON.parse(data);
+                var objArr = [];
 
-
-    //                 // return "<div class='row task-panel'>"+
-    //                 //         "<div class='card' style='width: 20rem;'>"+
-    //                 //         "<div class='card-body'><h4 class='card-title'>" + task + 
-    //                 //         "</h4></div></div></div>";
-    //             });
-
-
-    //             var collection = $("div#task-panel");
-    //             for( var i in obj) {
-    //                 var task = obj[0]['fields']['name']
-    //                 collection = collection.add($(".card"));
-    //                 $("#task-panel.task-name").append("<p>" + task + "</p>");
-    //             }
-
-
-    //             // }
-    //         }
-    //     });
-    //     // console.log($('#task-panel'));
-    // }, 1000);
-
+                for (key in obj){   
+                    for (k in catIdArr){
+                        if (obj[key]['fields']['category'] == catIdArr[k]){
+                            objArr[obj[key]['pk']] = obj[key]['fields'];
+                        }
+                    }
+                }
+                $('#task-panel').empty();
+                for (key in objArr){
+                    drawTask(key, objArr);
+                }
+            })
+            .fail(function() {
+                console.log("error");
+            });
+    }
 });

@@ -13,16 +13,22 @@
 		  Add task
 		</button>
 
-		{% for category in  categories %}
-		<div class="form-check">
-			<input class="form-check-input" type="checkbox" value="" id="cat-{{ category.id }}">
-			<label class="form-check-label" for="cat-{{ category.id }}">
-				{{ category }} 
-			</label>
-		</div>
-		<hr>
-		{% endfor %}
+		<button type="button" class="btn btn-success mt-3 mb-3" data-toggle="modal" data-target="#modal-add-category">
+		  Add category
+		</button>
 
+		<div id="category-panel">
+			{% for category in  categories %}
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="cat-{{ category.id }}">
+					{# <input class="form-check-input" type="radio" id="cat-{{ category.id }}"> #}
+					<label class="form-check-label" for="cat-{{ category.id }}">
+						{{ category }} 
+					</label>
+				</div>
+				<hr>
+			{% endfor %}
+		</div>
 	</div>
 
     <div class="col-md-10 task-panel" id="task-panel">
@@ -30,18 +36,6 @@
         	<div class="card bg-light text-dark">
 				<div class="card-body">{{ task.name }}</div>
 			</div>
-            {# <div class="col-md-12 card float-left"> #}
-            		{# <div class="card-body"> #}
-	                    {# <p class="task-name card-title">{{ task.name }}</h4> #}
-	                    {# <h6 class="card-subtitle mb-2 text-muted">{{ task.category }}</h6> #}
-	                    {# <p class="card-text">{{ task.description }}</p> #}
-	                    {# <p class="card-text">Deadline: {{ task.deadline }}</p> #}
-	{#                        <p class="card-">Author: {{ task.author }}</p>#}
-	{#                        <p class="card-text">Performers: {{ task.get_performer }}</p>#}
-	                    {# <a href="#" class="card-link">Card link</a> #}
-	                    {# <a href="#" class="card-link">Another link</a> #}
-	                {# </div> #}
-            {# </div> #}
         {% endfor %}
     </div>
 </div>
@@ -49,4 +43,5 @@
 
 
 {% include 'include/modal_window.html' %}
+{% include 'include/modal_category.html' %}
 {% endblock %}

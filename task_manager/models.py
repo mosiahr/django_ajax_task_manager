@@ -20,7 +20,7 @@ class Category(models.Model):
 
 class Task(models.Model):
     name = models.CharField(max_length=140, verbose_name=_('Name'))
-    category = models.ForeignKey(Category,  on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     # deadline = models.DateField()
     # author = models.ForeignKey(User,  on_delete=models.CASCADE)
