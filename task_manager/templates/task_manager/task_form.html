@@ -9,7 +9,7 @@
 
 <div class="row col-md-12">
 	<div class="col-md-2 card">
-		<button type="button" class="btn btn-primary mt-3 mb-3" data-toggle="modal" data-target="#modal-add-task">
+		<button id="add-task" type="button" class="btn btn-primary mt-3 mb-3" data-toggle="modal" data-target="#modal-add-task">
 		  Add task
 		</button>
 
@@ -31,7 +31,14 @@
 		</div>
 	</div>
 
-    <div class="col-md-10 task-panel" id="task-panel">
+    <div class="col-md-8 task-panel" id="task-panel">
+        {% for task in tasks %}
+        	<div class="card bg-light text-dark">
+				<div class="card-body">{{ task.name }}</div>
+			</div>
+        {% endfor %}
+    </div>
+    <div class="col-md-2 task-panel" id="task-panel">
         {% for task in tasks %}
         	<div class="card bg-light text-dark">
 				<div class="card-body">{{ task.name }}</div>

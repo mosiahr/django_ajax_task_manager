@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.core import serializers
 
 from .forms import TaskAddForm, CategoryAddForm
-from .models import Task, Category
+from .models import Task, Category, Mark
 
 
 class TaskListView(ListView):
@@ -125,9 +125,23 @@ class CategoryJsonView(View):
 
     def post(self, request):
         queryset = self.get_queryset()
-        print(queryset)
         data = serializers.serialize("json", queryset)
         return JsonResponse(data, status=200, safe=False)
 
     def get_queryset(self):
         return Category.objects.all()
+
+
+class MarkJsonView(View):
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        data = serializers.serialize("json", queryset)
+        return JsonResponse(data, status=200, safe=False)
+
+    def post(self, request):
+        queryset = self.get_queryset()
+        data = serializers.serialize("json", queryset)
+        return JsonResponse(data, status=200, safe=False)
+
+    def get_queryset(self):
+        return Mark.objects.all()

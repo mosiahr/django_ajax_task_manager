@@ -5,9 +5,8 @@ $(document).ready(function() {
     taskForm.submit(function(event) {
         event.preventDefault();
         var formData = $(this).serializeArray();
-        // console.log(formData);
-
         var formDataArr = [];
+
         for (key in formData){
             formDataArr[formData[key]['name']] = formData[key]['value'];
         }
@@ -42,6 +41,30 @@ $(document).ready(function() {
         }
 
     });
+
+    var buttonAddTask = $('#add-task');
+    buttonAddTask.click(function(event) {
+        selectCat = taskForm.find('#id_category');
+        selectCat.empty();
+        console.log(selectCat);
+
+        var arrGetCat = getCategoryOrMark('/task/json/category/');
+        selectCat.append($("<option>").attr('value', '').text('----------'));
+        for (key in arrGetCat) {
+            selectCat.append($("<option>").attr('value', key).text(arrGetCat[key]['name']))
+        }
+
+        selectMark = taskForm.find('#id_mark');
+        selectMark.empty();
+
+        var arrGetMark = getCategoryOrMark('/task/json/mark/');
+        selectMark.append($("<option>").attr('value', '').text('----------'));
+        
+        for (key in arrGetMark) {
+            selectMark.append($("<option>").attr('value', key).text(arrGetMark[key]['name']))
+        }
+    });    
+
 
     // Add category
     var categoryForm = $('#category-form');
@@ -172,7 +195,7 @@ $(document).ready(function() {
     checkboxCat.change(function(event) {
         var catId = event.target.id.replace('cat-', '');
         var catIdArr = []
-        
+
         if (this.checked) {
             var arrChecked = jQuery.grep(checkboxCat, function( e ) {
                 return ( e.checked == true );
@@ -203,14 +226,23 @@ $(document).ready(function() {
                 var obj = JSON.parse(data);
                 var objArr = [];
 
-                for (key in obj){   
-                    for (k in catIdArr){
-                        if (obj[key]['fields']['category'] == catIdArr[k]){
-                            objArr[obj[key]['pk']] = obj[key]['fields'];
+                for (key in obj){ 
+                    if (catIdArr.length > 0) {
+                        for (k in catIdArr){
+                            if (obj[key]['fields']['category'] == catIdArr[k]){
+                                objArr[obj[key]['pk']] = obj[key]['fields'];
+                            }
                         }
+
+                    } else {
+                        objArr[obj[key]['pk']] = obj[key]['fields'];
+
                     }
                 }
+                console.log(catIdArr.length)
+                console.log(objArr.length)
                 $('#task-panel').empty();
+                
                 for (key in objArr){
                     drawTask(key, objArr);
                 }
@@ -219,4 +251,27 @@ $(document).ready(function() {
                 console.log("error");
             });
     }
+
+
+    function getCategoryOrMark(url){
+        var objArr = [];
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            async: false,
+            data: {'check': true },
+        })
+        .done(function(data) {
+            var obj = JSON.parse(data);
+            for (key in obj){
+                objArr[obj[key]['pk']] = obj[key]['fields'];
+            }
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        return objArr
+    }
+
 });

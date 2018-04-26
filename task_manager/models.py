@@ -17,10 +17,24 @@ class Category(models.Model):
         verbose_name = _('category')
         verbose_name_plural = _('categories')
 
+class Mark(models.Model):
+    name = models.CharField(max_length=140, verbose_name=_('Name'))
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = _('mark')
+        verbose_name_plural = _('marks')
+
 
 class Task(models.Model):
     name = models.CharField(max_length=140, verbose_name=_('Name'))
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    mark = models.ForeignKey(Mark, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     # deadline = models.DateField()
     # author = models.ForeignKey(User,  on_delete=models.CASCADE)
