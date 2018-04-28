@@ -26,9 +26,6 @@
                     <a class="blog-header-logo text-dark" href="#">Task manager</a>
                   </div>
                   <div class="col-4 d-flex justify-content-end align-items-center">
-                    <!-- <a class="text-muted" href="#">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-3"><circle cx="10.5" cy="10.5" r="7.5"></circle><line x1="21" y1="21" x2="15.8" y2="15.8"></line></svg>
-                    </a> -->
                     {% if user.is_authenticated %}
                     <a class="btn btn-sm btn-outline-secondary" href="{% url 'accounts:logout' %}">Logout</a>
                     {% endif %}
@@ -51,13 +48,11 @@
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script type="text/javascript"
 	 src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-{#    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>#}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-{#    <script src="{% static 'bootstrap-4.0.0/dist/js/bootstrap.min.js' %}"></script>#}
 
 
-    {# Enable Django CSRF-ready AJAX Calls #}
+    <!-- Enable Django CSRF-ready AJAX Calls -->
     <script type="text/javascript">
     // using jQuery
     function getCookie(name) {
@@ -91,9 +86,6 @@
         }
     });
     </script>
-
-
-
-    <script src="{% static "js/library.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/library.js" %}"></script>
   </body>
 </html>

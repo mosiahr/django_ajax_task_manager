@@ -5,7 +5,7 @@ from django.utils.translation import ugettext as _
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=140, verbose_name=_('Name'))
+    name = models.CharField(max_length=50, verbose_name=_('Name'))
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -13,12 +13,12 @@ class Category(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['name']
+        ordering = ["-updated"]
         verbose_name = _('category')
         verbose_name_plural = _('categories')
 
 class Mark(models.Model):
-    name = models.CharField(max_length=140, verbose_name=_('Name'))
+    name = models.CharField(max_length=50, verbose_name=_('Name'), unique=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -26,9 +26,13 @@ class Mark(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['name']
+        ordering = ['-updated']
         verbose_name = _('mark')
         verbose_name_plural = _('marks')
+
+
+    def clean(self):
+        self.name = self.name.capitalize()
 
 
 class Task(models.Model):

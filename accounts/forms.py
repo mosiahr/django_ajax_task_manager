@@ -10,3 +10,5 @@ class LoginForm(AuthenticationForm):
 
         self.fields['password'].widget.attrs = {"class": "form-control", 'placeholder': "Password"}
         self.fields['password'].label = ''
+        
+

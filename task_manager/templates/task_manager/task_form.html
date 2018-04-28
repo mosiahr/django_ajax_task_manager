@@ -8,47 +8,67 @@
 {% block content  %}
 
 <div class="row col-md-12">
-	<div class="col-md-2 card">
+	<!-- Category -->
+	<div class="col-md-2 card pb-3">
 		<button id="add-task" type="button" class="btn btn-primary mt-3 mb-3" data-toggle="modal" data-target="#modal-add-task">
 		  Add task
 		</button>
 
-		<button type="button" class="btn btn-success mt-3 mb-3" data-toggle="modal" data-target="#modal-add-category">
+		<button id="add-company" type="button" class="btn btn-success mt-3 mb-3" data-toggle="modal" data-target="#modal-add-category">
 		  Add category
 		</button>
 
+		<hr>
+
 		<div id="category-panel">
-			{% for category in  categories %}
+			<div class="nav flex-column nav-pills">
+				{% for category in  categories %}
+					<a class="btn btn-sm btn-outline-secondary mt-1 mb-1" 
+					id="cat-{{ category.id }}" href="#">{{ category }} </a>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+
+	
+	<!-- Task -->
+	<div class="col-md-8">
+		<div class="task-header alert alert-success" role="alert" style="display: none;"></div>
+	    <div class="task-panel" id="task-panel">
+	        {% for task in tasks %}
+	        	<div class="card bg-light text-dark">
+					<div class="card-body">{{ task.name }}</div>
+				</div>
+	        {% endfor %}
+	    </div>
+	</div>
+	
+
+
+    <!-- Mark -->
+    <div class="col-md-2 card p-1">
+        <form id='mark-form' action='.' data-url='{% url "task_manager:mark_add" %}' method="post">
+			<div class="">
+			<input type="text" class="form-control" name="name" id="mark-name" placeholder="Add mark" required>
+          	</div>
+        </form>
+		<div id="mark-panel" class="mt-3 mr-2 mb-3 ml-2">
+			{% for mark in  marks %}
 				<div class="form-check">
-					<input class="form-check-input" type="checkbox" id="cat-{{ category.id }}">
-					{# <input class="form-check-input" type="radio" id="cat-{{ category.id }}"> #}
-					<label class="form-check-label" for="cat-{{ category.id }}">
-						{{ category }} 
+					<input class="form-check-input" type="checkbox" id="mark-{{ mark.id }}">
+					<label class="form-check-label" for="mark-{{ mark.id }}">
+						{{ mark }} 
 					</label>
 				</div>
 				<hr>
 			{% endfor %}
 		</div>
 	</div>
-
-    <div class="col-md-8 task-panel" id="task-panel">
-        {% for task in tasks %}
-        	<div class="card bg-light text-dark">
-				<div class="card-body">{{ task.name }}</div>
-			</div>
-        {% endfor %}
-    </div>
-    <div class="col-md-2 task-panel" id="task-panel">
-        {% for task in tasks %}
-        	<div class="card bg-light text-dark">
-				<div class="card-body">{{ task.name }}</div>
-			</div>
-        {% endfor %}
-    </div>
 </div>
 
 
-
-{% include 'include/modal_window.html' %}
 {% include 'include/modal_category.html' %}
+{% include 'include/modal_window.html' %}
+{% include 'include/modal_error.html' %}
+{# {% include 'include/modal_mark.html' %} #}
 {% endblock %}

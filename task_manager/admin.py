@@ -5,9 +5,8 @@ from .models import Category, Task, Mark
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'mark']
-    # list_display = ['name', 'is_star', 'get_performer', 'is_complete']
-    # fields = ('name', 'category', 'deadline', 'author', 'performer', 'is_star', 'is_complete')
+    list_display = ['id', 'name', 'category', 'mark']
+    list_filter = ('category', 'mark')
 
 
 @admin.register(Category)

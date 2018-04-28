@@ -1,4 +1,11 @@
 $(document).ready(function() {
+
+    var catUrl = '/task/json/category/';
+
+    //add error class into login page
+    $(".errorlist").addClass('alert alert-danger')
+
+
     // Add Task
     var taskForm = $('#task-form');
 
@@ -12,7 +19,6 @@ $(document).ready(function() {
         }
 
         var thisURL = taskForm.attr("data-url") || window.location.href;  // or set your own url
-        console.log(thisURL);
 
         $.ajax({
                 method: "POST",
@@ -20,13 +26,12 @@ $(document).ready(function() {
                 // url: "/task/add/",
                 data: formData,
                 success: handleFormSuccess,
-                error: handleFormError,
-            })
+                error: handleFormError
+            });
         function handleFormSuccess(data, textStatus, jqXHR){
-            console.log(data)
-            console.log(textStatus)
-            console.log(jqXHR)
-            // drawTask(randomId);
+            // console.log(data)
+            // console.log(textStatus)
+            // console.log(jqXHR)
             console.log(this.url);
             $('#modal-add-task').modal('hide');
             taskForm[0].reset(); // reset form data
@@ -46,7 +51,6 @@ $(document).ready(function() {
     buttonAddTask.click(function(event) {
         selectCat = taskForm.find('#id_category');
         selectCat.empty();
-        console.log(selectCat);
 
         var arrGetCat = getCategoryOrMark('/task/json/category/');
         selectCat.append($("<option>").attr('value', '').text('----------'));
@@ -59,69 +63,17 @@ $(document).ready(function() {
 
         var arrGetMark = getCategoryOrMark('/task/json/mark/');
         selectMark.append($("<option>").attr('value', '').text('----------'));
-        
+
         for (key in arrGetMark) {
             selectMark.append($("<option>").attr('value', key).text(arrGetMark[key]['name']))
         }
-    });    
-
-
-    // Add category
-    var categoryForm = $('#category-form');
-
-    categoryForm.submit(function(event) {
-        event.preventDefault();
-        var formDataCompany = $(this).serializeArray();
-        console.log(formDataCompany);
-
-        var formDataArr = [];
-        for (key in formDataCompany){
-            formDataArr[formDataCompany[key]['name']] = formDataCompany[key]['value'];
-        }
-        console.log(formDataArr);
-
-        var thisURL = categoryForm.attr("data-url");  // or set your own url
-        console.log(thisURL);
-
-        $.ajax({
-                method: "POST",
-                url: thisURL,    // '/task/add/category/'
-                data: formDataCompany,
-                success: handleFormSuccess,
-                error: handleFormError,
-            })
-
-        function handleFormSuccess(data, textStatus, jqXHR){
-            console.log(data)
-            console.log(textStatus)
-            console.log(jqXHR)
-            $('#modal-add-category').modal('hide');
-            categoryForm[0].reset(); // reset form data
-
-            setCategoryDraw();
-        }
-
-        function handleFormError(jqXHR, textStatus, errorThrown){
-            console.log(jqXHR)
-            console.log(textStatus)
-            console.log(errorThrown)
-        }
-
     });
 
-    function drawTask(taskId, tasks){
-        var div = document.createElement('div');
-        div.className = 'card bg-light text-dark';
-        div.setAttribute('data', taskId);
 
-        var divCard = document.createElement('div');
-        divCard.className = 'card-body';
-        divCard.setAttribute('data', taskId);
-        divCard.innerHTML = tasks[taskId]['name'];
-        
-        div.append(divCard);
-        $('#task-panel').prepend(div);
-    }
+    
+
+
+   
 
     function setTaskDraw(){
         $.ajax({
@@ -143,13 +95,26 @@ $(document).ready(function() {
         })
     }
 
-    function setCategoryDraw(){
+    function drawTask(taskId, tasks){
+        var div = document.createElement('div');
+        div.className = 'card bg-light text-dark';
+        div.setAttribute('data', taskId);
+
+        var divCard = document.createElement('div');
+        divCard.className = 'card-body';
+        divCard.setAttribute('data', taskId);
+        divCard.innerHTML = tasks[taskId]['name'];
+
+        div.append(divCard);
+        $('#task-panel').prepend(div);
+    }
+
+    function setCategoryOrMarkDraw(){
         $.ajax({
             url: '/task/json/category/',
             type: 'POST',
             async: false,
-            // dataType: 'default: Intelligent Guess (Other values: xml, json, script, or html)',
-            data: {'check': true },
+            data: {'check': true }
         })
         .done(function(data) {
             var obj = JSON.parse(data);
@@ -157,92 +122,170 @@ $(document).ready(function() {
             for (key in obj){
                 objArr[obj[key]['pk']] = obj[key]['fields'];
             }
-
-            drawCategory((objArr.length-1), objArr);
+            drawCategoryOrMark((objArr.length-1), objArr);
         })
         .fail(function() {
             console.log("error");
         })
     }
 
-    function drawCategory(catId, categories){
-        var div = document.createElement('div');
-        div.className = 'form-check';
-        div.setAttribute('data', catId);
+    // function drawCategoryOrMark(catId, categories){
+    //     var div = document.createElement('div');
+    //     div.className = 'form-check';
+    //     div.setAttribute('data', catId);
 
-        var input = document.createElement('input');
-        input.className = 'form-check-input';
-        input.type = 'checkbox';
-        input.id = 'cat-' + catId;
+    //     var input = document.createElement('input');
+    //     input.className = 'form-check-input';
+    //     input.type = 'checkbox';
+    //     input.id = 'cat-' + catId;
 
-        var label = document.createElement('label');
-        label.className = 'form-check-label';
-        label.for = 'cat-' + categories[catId]['name'];
-        label.innerHTML = categories[catId]['name'];
+    //     var label = document.createElement('label');
+    //     label.className = 'form-check-label';
+    //     label.for = 'cat-' + categories[catId]['name'];
+    //     label.innerHTML = categories[catId]['name'];
 
-        var hr = document.createElement('hr');
+    //     var hr = document.createElement('hr');
 
-        div.append(input);
-        div.append(label);
-        div.append(hr);
+    //     div.append(input);
+    //     div.append(label);
+    //     div.append(hr);
 
-        $('#category-panel').prepend(div);
+    //     $('#category-panel').prepend(div);
+    // }
+
+    function drawCategoryOrMark(catId, categories){
+        var div = $('.nav');
+        var link = document.createElement('a');
+        link.className = 'btn btn-sm btn-outline-secondary mt-1 mb-1';
+        link.id = 'cat-' + catId;
+        link.href = '#';
+        link.innerHTML = categories[catId]['name'];
+
+        div.append(link);
+
+        $('#category-panel').append(div);
     }
 
 
-    //FILTER
-    var checkboxCat = $( ".form-check input:checkbox" );
-    checkboxCat.change(function(event) {
-        var catId = event.target.id.replace('cat-', '');
+    //FILTER (change checkbox category and mark)
+    var checkboxFormCheck = $( ".form-check input:checkbox" );
+    checkboxFormCheck.change(function(event) {
         var catIdArr = []
+        var isCat = false;
+        var isMark = false; 
+        var arrChecked = jQuery.grep(checkboxFormCheck, function( e ) {
+                return ( e.checked == true );
+            });
+        console.log('arrChecked', arrChecked)
 
         if (this.checked) {
-            var arrChecked = jQuery.grep(checkboxCat, function( e ) {
-                return ( e.checked == true );
-            });
-            for (key in arrChecked){
-                catIdArr.push(parseInt(arrChecked[key].id.replace('cat-', '')));
+            for (k in arrChecked){
+                if (arrChecked[k].id.search('cat') == 0){
+                    isCat = true;
+                }
+                if (arrChecked[k].id.search('mark') == 0){
+                    isMark = true;
+                }
             }
-            drawTaskAll(catIdArr, false);
+            console.log(isCat, isMark)
+            console.log(arrChecked)
+            for (key in arrChecked){
+                // catIdArr.push(parseInt(arrChecked[key].id.replace('cat-', '').replace('mark-', '')));
+                catIdArr.push(arrChecked[key].id);
+            }
+            drawTaskAll(catIdArr, isCat, isMark);
         } else {
-            var arrChecked = jQuery.grep(checkboxCat, function( e ) {
-                return ( e.checked == true );
-            });
-            for (key in arrChecked){
-                catIdArr.push(parseInt(arrChecked[key].id.replace('cat-', '')));
+            for (k in arrChecked){
+                if (arrChecked[k].id.search('cat') == 0){
+                    isCat = true;
+                }
+                if (arrChecked[k].id.search('mark') == 0){
+                    isMark = true;
+                }
             }
-            drawTaskAll(catIdArr, false);
+            console.log(isCat, isMark)
+            console.log(arrChecked)
+            for (key in arrChecked){
+                // catIdArr.push(parseInt(arrChecked[key].id.replace('cat-', '').replace('mark-', '')));
+                catIdArr.push(arrChecked[key].id);
+            }
+            drawTaskAll(catIdArr, isCat, isMark);
         }
     });
 
-    function drawTaskAll(catIdArr, all=true){
+    function drawTaskAll(elemIdArr, isCat, isMark){
         $.ajax({
                 url: '/task/json/',
                 type: 'POST',
                 async: false,
-                data: {'check': true },
+                data: {'check': true }
             })
             .done(function(data) {
                 var obj = JSON.parse(data);
                 var objArr = [];
 
-                for (key in obj){ 
-                    if (catIdArr.length > 0) {
-                        for (k in catIdArr){
-                            if (obj[key]['fields']['category'] == catIdArr[k]){
+                console.log('elemIdArr: ', elemIdArr)
+                console.log('obj: ', obj)
+                for (key in obj){
+                    if (elemIdArr.length > 0) {
+                        for (k in elemIdArr){
+                            // if (isCat === true && isMark === true) { 
+                            //     console.log('HEllo')
+                            //     // console.log(elemIdArr[k])
+                            //     // console.log(obj[key]['fields'])
+
+
+                            //     console.log(obj[key]['fields']['category'], parseInt(elemIdArr[k].replace('cat-', '')))
+
+                            //     // if (obj[key]['fields']['category'] == parseInt(elemIdArr[k].replace('cat-', '')) && 
+                            //     //     obj[key]['fields']['mark'] == parseInt(elemIdArr[k].replace('mark-', ''))){
+                            //     //     console.log('hi')
+                            //     //     objArr[obj[key]['pk']] = obj[key]['fields'];
+                            //     // }
+
+                            //     if (obj[key]['fields']['category'] == parseInt(elemIdArr[k].replace('cat-', ''))){
+                            //         objArr[obj[key]['pk']] = obj[key]['fields'];
+                            //     }
+                            //     if (obj[key]['fields']['mark'] == parseInt(elemIdArr[k].replace('mark-', ''))){
+                            //         objArr[obj[key]['pk']] = obj[key]['fields'];
+                            //     }
+
+                                // for (key in objArr){
+                                //     console.log(objArr[key])
+                                // }
+
+
+                            // } else {
+                            if (obj[key]['fields']['category'] == parseInt(elemIdArr[k].replace('cat-', ''))){
                                 objArr[obj[key]['pk']] = obj[key]['fields'];
                             }
+                            if (obj[key]['fields']['mark'] == parseInt(elemIdArr[k].replace('mark-', ''))){
+                                objArr[obj[key]['pk']] = obj[key]['fields'];
+                            }
+                            // }
+
+
+                            
+
                         }
-
                     } else {
+                        // All checkbox empty
                         objArr[obj[key]['pk']] = obj[key]['fields'];
-
                     }
                 }
-                console.log(catIdArr.length)
-                console.log(objArr.length)
                 $('#task-panel').empty();
-                
+
+                console.log(objArr)
+                var arrChecked = jQuery.grep(checkboxFormCheck, function( e ) {
+                    return ( e.checked == true );
+                });
+
+                // for (key in objArr){
+                //     if (isCat === true && isMark === true) { 
+                //         console.log(objArr[key])
+                //     }
+                // }
+
                 for (key in objArr){
                     drawTask(key, objArr);
                 }
@@ -254,13 +297,13 @@ $(document).ready(function() {
 
 
     function getCategoryOrMark(url){
-        var objArr = [];
+        var objArr = {};
 
         $.ajax({
             url: url,
             type: 'POST',
             async: false,
-            data: {'check': true },
+            data: {'check': true }
         })
         .done(function(data) {
             var obj = JSON.parse(data);
@@ -270,8 +313,213 @@ $(document).ready(function() {
         })
         .fail(function() {
             console.log("error");
-        })
+        });
         return objArr
     }
+
+
+
+    function drawTasks(elemId){
+        $.ajax({
+                url: '/task/json/',
+                type: 'POST',
+                async: false,
+                data: {'check': true }
+            })
+            .done(function(data) {
+                var obj = JSON.parse(data);
+                var objArr = [];
+
+                console.log('elemId: ', elemId)
+                console.log('obj: ', obj)
+                for (key in obj){
+                    if (elemId) {
+                        if (obj[key]['fields']['category'] == parseInt(elemId.replace('cat-', ''))){
+                            objArr[obj[key]['pk']] = obj[key]['fields'];
+                        }
+                        if (obj[key]['fields']['mark'] == parseInt(elemId.replace('mark-', ''))){
+                            objArr[obj[key]['pk']] = obj[key]['fields'];
+                        }
+                    } else {
+                        // All checkbox empty
+                        objArr[obj[key]['pk']] = obj[key]['fields'];
+                    }
+                }
+                $('#task-panel').empty();
+                for (key in objArr){
+                    drawTask(key, objArr);
+                }
+            })
+            .fail(function() {
+                console.log("error");
+            });
+    }
+
+
+
+    // CATEGORY
+    var navCat = $( ".nav a" );
+    navCat.click(function(event) {
+        event.preventDefault();
+        navCat.removeClass('active');
+        $(event.target).addClass('active');
+
+        console.log(event.target.id)
+        drawHeader(event.target.id)
+        drawTasks(event.target.id)
+    });
+
+    function drawHeader(idCat){
+        $(".task-header").empty();
+        cats = getCategoryOrMark(catUrl);
+        for (key in cats) {
+            if (parseInt(key) == parseInt(idCat.replace('cat-', ''))){
+                $(".task-header").append('Task List: ' + cats[key]['name']).show();
+            }
+        }
+    }
+
+    // Add Category
+    var modalCat = $('#modal-add-category');
+    modalCat.on('shown.bs.modal', function() {
+        $(this).find('[autofocus]').focus();
+    });
+
+    var categoryForm = $('#category-form');
+    categoryForm.submit(function(event) {
+        event.preventDefault();
+
+        var formDataCompany = $(this).serializeArray();
+        var formDataArr = [];
+
+        for (key in formDataCompany){
+            formDataArr[formDataCompany[key]['name']] = formDataCompany[key]['value'];
+        }
+
+        var thisURL = categoryForm.attr("data-url");  // or set your own url
+
+        $.ajax({
+                method: "POST",
+                url: thisURL,                 // '/task/add/category/'
+                data: formDataCompany,
+            })
+            .done(function(data) {
+                $('#modal-add-category').modal('hide');
+                categoryForm[0].reset(); // reset form data
+                drawCatList();
+            })
+            .fail(function() {
+                console.log("error");
+            })
+    });
+
+    function drawCatList(){
+        $.ajax({
+            url: '/task/json/category/',
+            type: 'POST',
+            async: false,
+            data: {'check': true }
+        })
+        .done(function(data) {
+            var obj = JSON.parse(data);
+            var objArr = [];
+            for (key in obj){
+                objArr[obj[key]['pk']] = obj[key]['fields'];
+            }
+            console.log('objArr', objArr);
+            $('#category-panel').empty();
+
+            for (key in objArr){
+                var div = document.createElement('div');
+                div.className = 'nav flex-column nav-pills';
+
+                var link = document.createElement('a');
+                link.className = 'btn btn-sm btn-outline-secondary mt-1 mb-1';
+                link.id = 'cat-' + key;
+                link.href = '#';
+                link.innerHTML = objArr[key]['name'];
+
+                div.append(link);
+                $('#category-panel').prepend(div);
+            }
+        })
+        .fail(function() {
+            console.log("error");
+        })
+    }
+
+
+
+
+    // MARK CREATE
+    var markForm = $('#mark-form');
+    markForm.submit(function(event) {
+        event.preventDefault();
+
+        var formDataMark = $(this).serializeArray(),
+            thisURL = markForm.attr("data-url"),
+            formDataArr = {};
+
+        for (key in formDataMark){
+            formDataArr[formDataMark[key]['name']] = formDataMark[key]['value'];
+        }
+
+        $.ajax({
+                method: "POST",
+                url: thisURL,                 // '/task/add/mark/'
+                data: formDataMark
+            })
+            .done(function(data) {
+                var id    = data['id'], 
+                    // name capitalize
+                    name  = formDataArr['name'].toLowerCase().replace(/^(.)/g, function(letter) {
+                        return letter.toUpperCase();
+                    });
+
+                markForm[0].reset(); // reset form data
+
+                //Draw mark data
+                var div = document.createElement('div');
+                div.className = 'form-check';
+
+                var input = document.createElement('input');
+                input.className = 'form-check-input';
+                input.type = 'checkbox';
+                input.id = 'mark-' + id;
+
+                var label = document.createElement('label');
+                label.className = 'form-check-label';
+                label.setAttribute('for', 'mark-' + id);
+                label.innerHTML = name;
+
+                var hr = document.createElement('hr');
+
+                div.append(input);
+                div.append(label);
+                div.append(hr);
+
+                $('#mark-panel').prepend(div);
+            })
+            .fail(function(data) {
+                var errorMsg;
+                console.log("error");
+                console.log(data);
+
+                if (data.status === 400) {
+                    errMsg = data.responseJSON['name'];
+                }
+
+                var modalMark = $('#modal-error-all');
+                modalMark.modal('show');
+                console.log($('#modal-error'));
+                $('#modal-error').text(errMsg);
+                markForm[0].reset(); // reset form data
+
+            })
+    });
+
+
+
+
 
 });

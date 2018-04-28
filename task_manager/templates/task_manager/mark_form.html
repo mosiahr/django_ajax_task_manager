@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content  %}
+
+<div class="row col-md-12 card">
+	<form id='mark-form' action='.' data-url='{{ request.build_absolute_uri|safe }}'  method="post">
+	{{form.as_p}}
+	<div class="modal-footer">
+	    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	    <button type="submit" class="btn btn-primary">Add mark</button>
+	  </div>
+	</form>
+</div>	
+{% endblock %}

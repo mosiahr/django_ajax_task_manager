@@ -6,7 +6,7 @@ import json
 from django.http import JsonResponse
 from django.core import serializers
 
-from .forms import TaskAddForm, CategoryAddForm
+from .forms import TaskAddForm, CategoryAddForm, MarkAddForm
 from .models import Task, Category, Mark
 
 
@@ -51,10 +51,11 @@ class TaskAddView(LoginRequiredMixin, CreateView):
             return self.form_invalid(form)
 
     def form_invalid(self, form):
+        response = super(TaskAddView, self).form_invalid(form)
         if self.request.is_ajax():
             return JsonResponse(form.errors, status=400)
         else:
-            return super(TaskAddView, self).form_invalid(form)
+            return response
 
     def form_valid(self, form):
         response = super(TaskAddView, self).form_valid(form)
@@ -71,7 +72,8 @@ class TaskAddView(LoginRequiredMixin, CreateView):
         context = super(TaskAddView, self).get_context_data(**kwargs)
         tasks = Task.objects.all()
         categories = Category.objects.all()
-        context.update({ 'tasks': tasks, 'categories': categories, 'form_cat': CategoryAddForm })
+        marks = Mark.objects.all()
+        context.update({ 'tasks': tasks, 'categories': categories, 'marks': marks})
         return context
 
 
@@ -109,13 +111,6 @@ class CategoryAddView(LoginRequiredMixin, CreateView):
         else:
             return response
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(CategoryAddView, self).get_context_data(**kwargs)
-    #     tasks = Task.objects.all()
-    #     categories = Category.objects.all()
-    #     context.update({ 'tasks': tasks, 'categories': categories })
-    #     return context
-
 
 class CategoryJsonView(View):
     def get(self, request, *args, **kwargs):
@@ -145,3 +140,33 @@ class MarkJsonView(View):
 
     def get_queryset(self):
         return Mark.objects.all()
+
+
+class MarkAddView(LoginRequiredMixin, CreateView):
+    form_class = MarkAddForm
+    model = Mark
+    success_url = '/success/'
+    template_name = 'task_manager/mark_form.html'
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        if self.request.is_ajax():
+            return JsonResponse(form.errors, status=400)
+        else:
+            return super(MarkAddView, self).form_invalid(form)
+
+    def form_valid(self, form):
+        response = super(MarkAddView, self).form_valid(form)
+        if self.request.is_ajax():
+            data = {
+                'id': self.object.pk,
+            }
+            return JsonResponse(data)
+        else:
+            return response

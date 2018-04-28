@@ -10,12 +10,10 @@
       </div>
         <div class="modal-body">
             <form id='category-form' action='.' data-url='{% url "task_manager:category_add" %}' method="post">
-            {# <form id='category-form' action='.' data-url='{{ request.build_absolute_uri|safe }}' method="post"> #}
-              {# {{form.as_p}} #}
               <div class="form-group row">
                   <label for="category-name" class="col-sm-2 col-form-label">Name:</label>
                   <div class="col-sm-10">
-                      <input type="text" class="form-control" name="name" id="category-name" required>
+                      <input type="text" class="form-control" name="name" id="category-name" required autofocus>
                   </div>
               </div>
               <div class="modal-footer">
