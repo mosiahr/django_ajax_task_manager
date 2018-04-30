@@ -174,10 +174,7 @@ class MarkAddView(LoginRequiredMixin, CreateView):
 class TaskDeleteAjaxView(LoginRequiredMixin, View):
     def post(self, request):
         id = request.POST['id']
-        print('id: ', id)
-        self.kwargs['pk'] = id
-        # Task.objects.get(id=id).delete()
-
+        Task.objects.get(id=id).delete()
         queryset = self.get_queryset()
         data = serializers.serialize("json", queryset)
         # print('data', data)
