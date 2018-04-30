@@ -43,11 +43,9 @@ class Task(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     mark = models.ForeignKey(Mark, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
-    # deadline = models.DateField()
-    # author = models.ForeignKey(User,  on_delete=models.CASCADE)
-    # performer = models.ManyToManyField(User, related_name='performer', verbose_name=_('Performer'))
-    # is_complete = models.BooleanField(default=False)
-    # is_star = models.BooleanField(default=False)
+    deadline = models.DateField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author', blank=True)
+    performer = models.ManyToManyField(User, related_name='performer', verbose_name=_('Performer'))
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -55,8 +53,8 @@ class Task(models.Model):
         return self.name
 
 
-    # def get_performer(self):
-    #     return ", \n".join([l.username for l in self.performer.all()])
+    def get_performer(self):
+        return ", \n".join([l.username for l in self.performer.all()])
     
     class Meta:
         ordering = ["-updated"]

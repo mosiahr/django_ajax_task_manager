@@ -43,16 +43,16 @@
 		<div class="task-header alert alert-success" role="alert" style="display: none;"></div>
 	    <div class="task-panel" id="task-panel">
 	        {% for task in tasks %}
-	        	<div class="card bg-light text-dark">
-	        		<div class="card-header bg-transparent">{{ task.name }}
-	        			
-	        		</div>
-					<div class="card-body">
-						<h6 class="card-title"></h6>
-						<p class="card-text">{{ task.description }}</p>
-					</div>
+	        	<div class="card bg-light text-dark mb-3">
+	        		<div class="card-header bg-transparent">{{ task.name }}</div>
+					<ul class="list-group list-group-flush">
+					    <li class="list-group-item">{{ task.description }}</li>
+					    <li class="list-group-item">Author: {{ task.author }}</li>
+					    <li class="list-group-item">Performers: {{ task.get_performer }}</li>
+					</ul>
 					<div class="card-footer">
-						<a href="#" id="{{ task.id }}"  class="card-link float-right">Del</a>
+						<span>Deadline: {{ task.deadline }}</span>
+						<a href="#" id="{{ task.id }}"  class="card-link float-right">Delete</a>
 					</div>
 				</div>
 	        {% endfor %}

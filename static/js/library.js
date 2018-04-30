@@ -6,6 +6,10 @@ $(document).ready(function() {
     $(".errorlist").addClass('alert alert-danger')
 
 
+    // Call datepicker
+    $('.datepicker').datepicker({});
+
+
     // Add Task
     var taskForm = $('#task-form');
 
@@ -24,26 +28,31 @@ $(document).ready(function() {
                 method: "POST",
                 url: thisURL,
                 data: formData,
-                success: handleFormSuccess,
-                error: handleFormError
-            });
-        function handleFormSuccess(data, textStatus, jqXHR){
-            $('#modal-add-task').modal('hide');
-            taskForm[0].reset(); // reset form data
+            })
+            .done(function(data) {
+                $('#modal-add-task').modal('hide');
+                taskForm[0].reset(); // reset form data
+                console.log(data.gueryset);
+                setTaskDraw();
+            })
+            .fail(function(data) {
+                console.log("error");
+                console.log(data);
 
-            setTaskDraw();
-        }
-
-        function handleFormError(jqXHR, textStatus, errorThrown){
-            console.log(jqXHR)
-            console.log(textStatus)
-            console.log(errorThrown)
-        }
-
+                if (data.status === 400) {
+                    errMsg = data.responseJSON['__all__'];
+                    var modal = $('#modal-error-all');
+                    modal.modal('show');
+                    $('#modal-error').text(errMsg);
+                }
+                categoryForm[0].reset(); // reset form data
+            })
     });
 
     var buttonAddTask = $('#add-task');
     buttonAddTask.click(function(event) {
+        
+
         selectCat = taskForm.find('#id_category');
         selectCat.empty();
 
