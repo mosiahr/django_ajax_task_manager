@@ -23,16 +23,11 @@ $(document).ready(function() {
         $.ajax({
                 method: "POST",
                 url: thisURL,
-                // url: "/task/add/",
                 data: formData,
                 success: handleFormSuccess,
                 error: handleFormError
             });
         function handleFormSuccess(data, textStatus, jqXHR){
-            // console.log(data)
-            // console.log(textStatus)
-            // console.log(jqXHR)
-            console.log(this.url);
             $('#modal-add-task').modal('hide');
             taskForm[0].reset(); // reset form data
 
@@ -80,7 +75,6 @@ $(document).ready(function() {
             url: '/task/json/',
             type: 'POST',
             async: false,
-            data: {'check': true },
         })
         .done(function(data) {
             var obj = JSON.parse(data);
@@ -114,7 +108,6 @@ $(document).ready(function() {
             url: '/task/json/category/',
             type: 'POST',
             async: false,
-            data: {'check': true }
         })
         .done(function(data) {
             var obj = JSON.parse(data);
@@ -128,6 +121,33 @@ $(document).ready(function() {
             console.log("error");
         })
     }
+
+    
+    //TASK DELETE
+    taskDelLink = $('#task-panel a')
+    taskDelLink.click(function(event) {
+        event.preventDefault();
+        console.log(event)
+        var id = event.target.id
+        console.log(id)
+
+        $.ajax({
+            url: '/task/del/ajax/',
+            type: 'POST',
+            // async: false,
+            data: {'id': id }
+        })
+        .done(function(data) {
+            console.log('done')
+            console.log(data)
+            drawTasks();
+        })
+        .fail(function() {
+            console.log("error");
+        })
+    });
+
+
 
     // function drawCategoryOrMark(catId, categories){
     //     var div = document.createElement('div');
@@ -218,7 +238,6 @@ $(document).ready(function() {
                 url: '/task/json/',
                 type: 'POST',
                 async: false,
-                data: {'check': true }
             })
             .done(function(data) {
                 var obj = JSON.parse(data);
@@ -229,44 +248,12 @@ $(document).ready(function() {
                 for (key in obj){
                     if (elemIdArr.length > 0) {
                         for (k in elemIdArr){
-                            // if (isCat === true && isMark === true) { 
-                            //     console.log('HEllo')
-                            //     // console.log(elemIdArr[k])
-                            //     // console.log(obj[key]['fields'])
-
-
-                            //     console.log(obj[key]['fields']['category'], parseInt(elemIdArr[k].replace('cat-', '')))
-
-                            //     // if (obj[key]['fields']['category'] == parseInt(elemIdArr[k].replace('cat-', '')) && 
-                            //     //     obj[key]['fields']['mark'] == parseInt(elemIdArr[k].replace('mark-', ''))){
-                            //     //     console.log('hi')
-                            //     //     objArr[obj[key]['pk']] = obj[key]['fields'];
-                            //     // }
-
-                            //     if (obj[key]['fields']['category'] == parseInt(elemIdArr[k].replace('cat-', ''))){
-                            //         objArr[obj[key]['pk']] = obj[key]['fields'];
-                            //     }
-                            //     if (obj[key]['fields']['mark'] == parseInt(elemIdArr[k].replace('mark-', ''))){
-                            //         objArr[obj[key]['pk']] = obj[key]['fields'];
-                            //     }
-
-                                // for (key in objArr){
-                                //     console.log(objArr[key])
-                                // }
-
-
-                            // } else {
                             if (obj[key]['fields']['category'] == parseInt(elemIdArr[k].replace('cat-', ''))){
                                 objArr[obj[key]['pk']] = obj[key]['fields'];
                             }
                             if (obj[key]['fields']['mark'] == parseInt(elemIdArr[k].replace('mark-', ''))){
                                 objArr[obj[key]['pk']] = obj[key]['fields'];
                             }
-                            // }
-
-
-                            
-
                         }
                     } else {
                         // All checkbox empty
@@ -303,7 +290,6 @@ $(document).ready(function() {
             url: url,
             type: 'POST',
             async: false,
-            data: {'check': true }
         })
         .done(function(data) {
             var obj = JSON.parse(data);
@@ -324,7 +310,6 @@ $(document).ready(function() {
                 url: '/task/json/',
                 type: 'POST',
                 async: false,
-                data: {'check': true }
             })
             .done(function(data) {
                 var obj = JSON.parse(data);
@@ -356,18 +341,22 @@ $(document).ready(function() {
     }
 
 
-
     // CATEGORY
-    var navCat = $( ".nav a" );
-    navCat.click(function(event) {
-        event.preventDefault();
-        navCat.removeClass('active');
-        $(event.target).addClass('active');
+    function getCat(){
+        var navCat = $( ".nav a" );
+        console.log(navCat)
+        navCat.click(function(event) {
+            event.preventDefault();
 
-        console.log(event.target.id)
-        drawHeader(event.target.id)
-        drawTasks(event.target.id)
-    });
+            console.log(event)
+            navCat.removeClass('active');
+            $(event.target).addClass('active');
+
+            drawHeader(event.target.id)
+            drawTasks(event.target.id)
+        });
+    }
+    getCat();
 
     function drawHeader(idCat){
         $(".task-header").empty();
@@ -379,7 +368,7 @@ $(document).ready(function() {
         }
     }
 
-    // Add Category
+    // CREATE CATEGORY
     var modalCat = $('#modal-add-category');
     modalCat.on('shown.bs.modal', function() {
         $(this).find('[autofocus]').focus();
@@ -390,7 +379,7 @@ $(document).ready(function() {
         event.preventDefault();
 
         var formDataCompany = $(this).serializeArray();
-        var formDataArr = [];
+        var formDataArr = {};
 
         for (key in formDataCompany){
             formDataArr[formDataCompany[key]['name']] = formDataCompany[key]['value'];
@@ -406,47 +395,77 @@ $(document).ready(function() {
             .done(function(data) {
                 $('#modal-add-category').modal('hide');
                 categoryForm[0].reset(); // reset form data
-                drawCatList();
+                // drawCatList();
+
+                var id    = data['id'], 
+                    // name capitalize
+                    name  = formDataArr['name'].toLowerCase().replace(/^(.)/g, function(letter) {
+                        return letter.toUpperCase();
+                    });
+
+                //Draw mark data
+                var div = $('.nav')
+                var link = document.createElement('a');
+                link.className = 'btn btn-sm btn-outline-secondary mt-1 mb-1';
+                link.id = 'cat-' + id;
+                link.href = '#';
+                link.innerHTML = name;
+                div.prepend(link);
+                getCat();
             })
-            .fail(function() {
+            .fail(function(data) {
+                var errorMsg;
                 console.log("error");
+                console.log(data);
+
+                if (data.status === 400) {
+                    errMsg = data.responseJSON['name'];
+                }
+
+                var modal = $('#modal-error-all');
+                modal.modal('show');
+                console.log($('#modal-error'));
+                $('#modal-error').text(errMsg);
+                categoryForm[0].reset(); // reset form data
             })
     });
 
-    function drawCatList(){
-        $.ajax({
-            url: '/task/json/category/',
-            type: 'POST',
-            async: false,
-            data: {'check': true }
-        })
-        .done(function(data) {
-            var obj = JSON.parse(data);
-            var objArr = [];
-            for (key in obj){
-                objArr[obj[key]['pk']] = obj[key]['fields'];
-            }
-            console.log('objArr', objArr);
-            $('#category-panel').empty();
 
-            for (key in objArr){
-                var div = document.createElement('div');
-                div.className = 'nav flex-column nav-pills';
 
-                var link = document.createElement('a');
-                link.className = 'btn btn-sm btn-outline-secondary mt-1 mb-1';
-                link.id = 'cat-' + key;
-                link.href = '#';
-                link.innerHTML = objArr[key]['name'];
+    // function drawCatList(){
+    //     $.ajax({
+    //         url: '/task/json/category/',
+    //         type: 'POST',
+    //         async: false,
+    //         data: {'check': true }
+    //     })
+    //     .done(function(data) {
+    //         var obj = JSON.parse(data);
+    //         var objArr = [];
+    //         for (key in obj){
+    //             objArr[obj[key]['pk']] = obj[key]['fields'];
+    //         }
+    //         console.log('objArr', objArr);
+    //         $('#category-panel').empty();
 
-                div.append(link);
-                $('#category-panel').prepend(div);
-            }
-        })
-        .fail(function() {
-            console.log("error");
-        })
-    }
+    //         for (key in objArr){
+    //             var div = document.createElement('div');
+    //             div.className = 'nav flex-column nav-pills';
+
+    //             var link = document.createElement('a');
+    //             link.className = 'btn btn-sm btn-outline-secondary mt-1 mb-1';
+    //             link.id = 'cat-' + key;
+    //             link.href = '#';
+    //             link.innerHTML = objArr[key]['name'];
+
+    //             div.append(link);
+    //             $('#category-panel').prepend(div);
+    //         }
+    //     })
+    //     .fail(function() {
+    //         console.log("error");
+    //     })
+    // }
 
 
 
@@ -503,15 +522,13 @@ $(document).ready(function() {
             .fail(function(data) {
                 var errorMsg;
                 console.log("error");
-                console.log(data);
 
                 if (data.status === 400) {
                     errMsg = data.responseJSON['name'];
                 }
 
-                var modalMark = $('#modal-error-all');
-                modalMark.modal('show');
-                console.log($('#modal-error'));
+                var modal = $('#modal-error-all');
+                modal.modal('show');
                 $('#modal-error').text(errMsg);
                 markForm[0].reset(); // reset form data
 

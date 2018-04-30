@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView, CreateView, View
+from django.views.generic import ListView, CreateView, View, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 import json
@@ -103,16 +103,15 @@ class CategoryAddView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         response = super(CategoryAddView, self).form_valid(form)
         if self.request.is_ajax():
-            # print(form.cleaned_data)
             data = {
-                'message': "Successfully submitted form data."
+                'id': self.object.pk,
             }
             return JsonResponse(data)
         else:
             return response
 
 
-class CategoryJsonView(View):
+class CategoryJsonView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         data = serializers.serialize("json", queryset)
@@ -127,7 +126,7 @@ class CategoryJsonView(View):
         return Category.objects.all()
 
 
-class MarkJsonView(View):
+class MarkJsonView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         data = serializers.serialize("json", queryset)
@@ -170,3 +169,26 @@ class MarkAddView(LoginRequiredMixin, CreateView):
             return JsonResponse(data)
         else:
             return response
+
+
+class TaskDeleteAjaxView(LoginRequiredMixin, View):
+    def post(self, request):
+        id = request.POST['id']
+        print('id: ', id)
+        self.kwargs['pk'] = id
+        # Task.objects.get(id=id).delete()
+
+        queryset = self.get_queryset()
+        data = serializers.serialize("json", queryset)
+        # print('data', data)
+        return JsonResponse(data, status=200, safe=False)
+
+    def get_object(self, queryset=None):
+        print(self.kwargs)
+        obj = Task.objects.get(pk=self.kwargs['pk'])
+        return obj
+
+    def get_queryset(self):
+        return Task.objects.all()
+
+    

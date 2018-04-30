@@ -14,10 +14,17 @@
 		  Add task
 		</button>
 
-		<button id="add-company" type="button" class="btn btn-success mt-3 mb-3" data-toggle="modal" data-target="#modal-add-category">
+		<!-- <button id="add-company" type="button" class="btn btn-success mt-3 mb-3" data-toggle="modal" data-target="#modal-add-category">
 		  Add category
-		</button>
+		</button> -->
 
+		<hr>
+		<form id='category-form' action='.' data-url='{% url "task_manager:category_add" %}' method="post">
+			<div class="">
+			<input type="text" class="form-control" name="name" id="category-name" placeholder="Add category"
+			 required>
+          	</div>
+        </form>
 		<hr>
 
 		<div id="category-panel">
@@ -37,7 +44,16 @@
 	    <div class="task-panel" id="task-panel">
 	        {% for task in tasks %}
 	        	<div class="card bg-light text-dark">
-					<div class="card-body">{{ task.name }}</div>
+	        		<div class="card-header bg-transparent">{{ task.name }}
+	        			
+	        		</div>
+					<div class="card-body">
+						<h6 class="card-title"></h6>
+						<p class="card-text">{{ task.description }}</p>
+					</div>
+					<div class="card-footer">
+						<a href="#" id="{{ task.id }}"  class="card-link float-right">Del</a>
+					</div>
 				</div>
 	        {% endfor %}
 	    </div>
@@ -67,7 +83,7 @@
 </div>
 
 
-{% include 'include/modal_category.html' %}
+{# {% include 'include/modal_category.html' %} #}
 {% include 'include/modal_window.html' %}
 {% include 'include/modal_error.html' %}
 {# {% include 'include/modal_mark.html' %} #}
