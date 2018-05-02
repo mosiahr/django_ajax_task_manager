@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^task/', include('task_manager.urls', namespace='task_manager')),
     url(r'^', include('accounts.urls', namespace='accounts')),
+    url(r'^api/task/', include('task_manager.api.urls', namespace='task-api')),
 ]
 
 

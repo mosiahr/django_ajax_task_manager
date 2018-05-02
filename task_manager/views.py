@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView, CreateView, View, DeleteView
+from django.views.generic import ListView, CreateView, View, DeleteView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 
@@ -12,16 +12,8 @@ from django.db.models import Q
 from .forms import TaskAddForm, CategoryAddForm, MarkAddForm
 from .models import Task, Category, Mark
 
-
-# class TaskListView(ListView):
-#     model = Task
-#     template_name = 'task/task_list.html'
-#     context_object_name = 'tasks'
-
-#     def get_queryset(self):
-#         print(self.request.user.id)
-#         return Task.objects.filter(author=self.request.user.id)
-
+from task_manager.api.serializers import TaskSerializer
+from rest_framework.renderers import JSONRenderer
 
 
 class TaskJsonView(View):
@@ -40,7 +32,7 @@ class TaskJsonView(View):
         return Task.objects.all()
 
 
-class TaskAddView(LoginRequiredMixin, CreateView):
+class TaskAddView(LoginRequiredMixin, FormView):
     form_class = TaskAddForm
     model = Task
     success_url = '/success/'
@@ -62,26 +54,21 @@ class TaskAddView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         obj = form.save(commit=False)
-        obj.author = self.get_object()
+        obj.author = self.request.user
         obj.save()
         form.save_m2m()    
 
         queryset = self.get_queryset()
-        # print(queryset)
-        response = super(TaskAddView, self).form_valid(form)
+        serializer = TaskSerializer(queryset,  many=True)
+
         if self.request.is_ajax():
-            data = {
-                'queryset': serializers.serialize("json", queryset)
-            }
-            return JsonResponse(data)
+            return JsonResponse(serializer.data, safe=False)
         else:
-            return response
+            return super(TaskAddView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
-        self.object = self.get_object()
         context = super(TaskAddView, self).get_context_data(**kwargs)
         tasks = self.get_queryset()
-        print(tasks)
         categories = Category.objects.all()
         marks = Mark.objects.all()
         context.update({ 'tasks': tasks, 'categories': categories, 'marks': marks})
@@ -91,20 +78,12 @@ class TaskAddView(LoginRequiredMixin, CreateView):
         qs = Task.objects.filter(Q(author=self.request.user.id)|Q(performer__in=[self.request.user.id])).distinct()
         return qs
 
-    def get_object(self, queryset=None):
-        # print(self.request.user)
-        return self.request.user
-
 
 class CategoryAddView(LoginRequiredMixin, CreateView):
     form_class = CategoryAddForm
     model = Category
     success_url = '/success/'
     template_name = 'task_manager/category_form.html'
-
-    # def get(self, request):
-    #     context = {'form': self.get_form(), 'tasks': Task.objects.all()}
-    #     return render(request, 'task_manager/task_form.html', context)
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
@@ -195,14 +174,14 @@ class TaskDeleteAjaxView(LoginRequiredMixin, View):
         id = request.POST['id']
         Task.objects.get(id=id).delete()
         queryset = self.get_queryset()
-        data = serializers.serialize("json", queryset)
-        return JsonResponse(data, status=200, safe=False)
+        serializer = TaskSerializer(queryset,  many=True)
+        return JsonResponse(serializer.data, safe=False)
 
     def get_object(self, queryset=None):
-        print(self.kwargs)
         obj = Task.objects.get(pk=self.kwargs['pk'])
         return obj
 
     def get_queryset(self):
-        return Task.objects.all()
+        qs = Task.objects.filter(Q(author=self.request.user.id)|Q(performer__in=[self.request.user.id])).distinct()
+        return qs
 

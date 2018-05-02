@@ -10,7 +10,7 @@ $(document).ready(function() {
     $('.datepicker').datepicker({});
 
 
-    // Add Task
+    // CREATE TASK
     var taskForm = $('#task-form');
 
     taskForm.submit(function(event) {
@@ -32,8 +32,10 @@ $(document).ready(function() {
             .done(function(data) {
                 $('#modal-add-task').modal('hide');
                 taskForm[0].reset(); // reset form data
-                console.log(data.gueryset);
-                setTaskDraw();
+                console.log('DATA: ', data);
+
+                drawT(data);
+                forTaskDel();
             })
             .fail(function(data) {
                 console.log("error");
@@ -45,7 +47,7 @@ $(document).ready(function() {
                     modal.modal('show');
                     $('#modal-error').text(errMsg);
                 }
-                categoryForm[0].reset(); // reset form data
+                taskForm[0].reset(); // reset form data
             })
     });
 
@@ -74,10 +76,44 @@ $(document).ready(function() {
     });
 
 
+    function drawT(data){
+        $('#task-panel').empty();
+        for (key in data){
+            var performersArr = data[key]['performer'];
+            var performers = performersArr.map(obj=>{
+                return obj.username
+            }).join(', ');
+
+            var d = {
+                name: data[key]['name'],
+                description: data[key]['description'],
+                author: data[key]['author']['username'],
+                get_performer: performers,
+                deadline: data[key]['deadline'],
+                id: data[key]['id'],
+            }
+
+            var template = [
+                '<div class="card bg-light text-dark mb-3">',
+                    '<div id="task-name" class="card-header bg-transparent">{{ name }}</div>',
+                    '<ul class="list-group list-group-flush">',
+                        '<li id="task-description" class="list-group-item">{{ description }}</li>',
+                        '<li id="task-author" class="list-group-item">Author: {{ author }}</li>',
+                        '<li id="task-performer" class="list-group-item">Performers: {{ get_performer }}</li>',
+                    '</ul>',
+                    '<div class="card-footer">',
+                        '<span id="task-deadline">Deadline: {{ deadline }}</span>',
+                        '<a href="#" id="{{ id }}"  class="card-link float-right">Delete</a>',
+                    '</div>',
+                '</div>'
+            ].join("\n");
+
+            var html = Mustache.render(template, d);
+            $( "#task-panel" ).append(html);
+        }
+    }
     
 
-
-   
 
     function setTaskDraw(){
         $.ajax({
@@ -133,28 +169,28 @@ $(document).ready(function() {
 
     
     //TASK DELETE
-    taskDelLink = $('#task-panel a')
-    taskDelLink.click(function(event) {
-        event.preventDefault();
-        console.log(event)
-        var id = event.target.id
-        console.log(id)
+    function forTaskDel(){
+        taskDelLink = $('#task-panel a')
+        taskDelLink.click(function(event) {
+            event.preventDefault();
+            var id = event.target.id
 
-        $.ajax({
-            url: '/task/del/ajax/',
-            type: 'POST',
-            // async: false,
-            data: {'id': id }
-        })
-        .done(function(data) {
-            console.log('done')
-            console.log(data)
-            drawTasks();
-        })
-        .fail(function() {
-            console.log("error");
-        })
-    });
+            $.ajax({
+                url: '/task/del/ajax/',
+                type: 'POST',
+                data: {'id': id }
+            })
+            .done(function(data) {
+                drawT(data)
+                forTaskDel();
+            })
+            .fail(function() {
+                console.log("error");
+            })
+        });
+    }
+
+    forTaskDel();
 
 
 

@@ -51,7 +51,7 @@
 					    <li class="list-group-item">Performers: {{ task.get_performer }}</li>
 					</ul>
 					<div class="card-footer">
-						<span>Deadline: {{ task.deadline }}</span>
+						<span>Deadline: {{ task.deadline|date:"Y-m-d" }}</span>
 						<a href="#" id="{{ task.id }}"  class="card-link float-right">Delete</a>
 					</div>
 				</div>

@@ -44,17 +44,16 @@ class Task(models.Model):
     mark = models.ForeignKey(Mark, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     deadline = models.DateField()
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author', blank=True)
-    performer = models.ManyToManyField(User, related_name='performer', verbose_name=_('Performer'))
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks', blank=True)
+    performer = models.ManyToManyField(User, verbose_name=_('Performer'))
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
-
     def get_performer(self):
         return ", \n".join([l.username for l in self.performer.all()])
-    
+
     class Meta:
         ordering = ["-updated"]
