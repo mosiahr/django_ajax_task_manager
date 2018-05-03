@@ -8,6 +8,7 @@ from .views import (
     CategoryJsonView,
     MarkJsonView,
     MarkAddView,
+    UserJsonView,
     TaskDeleteAjaxView
 )
 
@@ -20,5 +21,6 @@ urlpatterns = [
     # url(r'^json/$', TaskJsonView.as_view(), name='task_json'),
     url(r'^json/category/$', CategoryJsonView.as_view(), name='category_json'),
     url(r'^json/mark/$', MarkJsonView.as_view()),
+    url(r'^json/user/$', UserJsonView.as_view()),
     url(r'^del/ajax/$', TaskDeleteAjaxView.as_view(), name='task_del'),
 ]

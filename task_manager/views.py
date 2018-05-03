@@ -1,6 +1,7 @@
 from django.views.generic import CreateView, View, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.contrib.auth.models import User
 
 from django.http import JsonResponse
 from django.core import serializers
@@ -115,6 +116,23 @@ class MarkJsonView(LoginRequiredMixin, View):
 
     def get_queryset(self):
         return Mark.objects.all()
+
+
+class UserJsonView(LoginRequiredMixin, View):
+    # def get(self, request, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     data = serializers.serialize("json", queryset)
+    #     return JsonResponse(data, status=200, safe=False)
+
+    def post(self, request):
+        queryset = self.get_queryset()
+        # queryset = [user.username for user in queryset]
+        print(queryset)
+        data = serializers.serialize("json", queryset)
+        return JsonResponse(data, status=200, safe=False)
+
+    def get_queryset(self):
+        return User.objects.all()
 
 
 class MarkAddView(LoginRequiredMixin, CreateView):

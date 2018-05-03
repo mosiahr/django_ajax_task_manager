@@ -67,6 +67,15 @@ $(document).ready(function() {
         for (var k in arrGetMark) {
             selectMark.append($("<option>").attr('value', k).text(arrGetMark[k]['name']))
         }
+
+        var performer = taskForm.find('#id_performer');
+        performer.empty();
+
+        var arrGetPerformer = getCategoryOrMark('/task/json/user/');
+        for (var k in arrGetPerformer) {
+            performer.append($("<option>").attr('value', k).text(arrGetPerformer[k]['username']))
+        }
+
     });
 
 

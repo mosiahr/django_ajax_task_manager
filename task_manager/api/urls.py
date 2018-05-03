@@ -8,5 +8,5 @@ from .views import (
 
 urlpatterns = [
     url(r'^$', TaskListAPIView.as_view(), name='task_list'),
-    url(r'^category/$', CategoryListAPIView.as_view(), name='category_list'),
+    # url(r'^category/$', CategoryListAPIView.as_view(), name='category_list'),
 ]
