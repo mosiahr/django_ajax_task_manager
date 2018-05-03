@@ -1,35 +1,13 @@
-from django.shortcuts import render
-from django.views.generic import ListView, CreateView, View, DeleteView, FormView
+from django.views.generic import CreateView, View, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
+from django.db.models import Q
 
-import json
 from django.http import JsonResponse
 from django.core import serializers
-
-from django.db.models import Q
+from task_manager.api.serializers import TaskSerializer
 
 from .forms import TaskAddForm, CategoryAddForm, MarkAddForm
 from .models import Task, Category, Mark
-
-from task_manager.api.serializers import TaskSerializer
-from rest_framework.renderers import JSONRenderer
-
-
-class TaskJsonView(View):
-    def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        data = serializers.serialize("json", queryset)
-        return JsonResponse(data, status=200, safe=False)
-
-    def post(self, request):
-        queryset = self.get_queryset()
-        # print(queryset)
-        data = serializers.serialize("json", queryset)
-        return JsonResponse(data, status=200, safe=False)
-
-    def get_queryset(self):
-        return Task.objects.all()
 
 
 class TaskAddView(LoginRequiredMixin, FormView):
@@ -71,7 +49,7 @@ class TaskAddView(LoginRequiredMixin, FormView):
         tasks = self.get_queryset()
         categories = Category.objects.all()
         marks = Mark.objects.all()
-        context.update({ 'tasks': tasks, 'categories': categories, 'marks': marks})
+        context.update({'tasks': tasks, 'categories': categories, 'marks': marks})
         return context
 
     def get_queryset(self):

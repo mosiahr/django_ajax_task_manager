@@ -28,9 +28,9 @@
 		<hr>
 
 		<div id="category-panel">
-			<div class="nav flex-column nav-pills">
+			<div class="nav nav-category flex-column nav-pills">
 				{% for category in  categories %}
-					<a class="btn btn-sm btn-outline-secondary mt-1 mb-1" 
+					<a class="btn btn-sm btn-outline-secondary mt-1 mb-1">
 					id="cat-{{ category.id }}" href="#">{{ category }} </a>
 				{% endfor %}
 			</div>
@@ -62,7 +62,7 @@
 
 
     <!-- Mark -->
-    <div class="col-md-2 card p-1">
+    <!-- <div class="col-md-2 card p-1">
         <form id='mark-form' action='.' data-url='{% url "task_manager:mark_add" %}' method="post">
 			<div class="">
 			<input type="text" class="form-control" name="name" id="mark-name" placeholder="Add mark" required>
@@ -79,7 +79,28 @@
 				<hr>
 			{% endfor %}
 		</div>
-	</div>
+	</div> -->
+
+
+    <div class="col-md-2 card pb-3">
+        <form class="mt-2" id='mark-form' action='.' data-url='{% url "task_manager:mark_add" %}' method="post">
+            <div class="">
+            <input type="text" class="form-control" name="name" id="mark-name" placeholder="Add mark"
+             required>
+            </div>
+        </form>
+        <hr>
+
+        <div id="mark-panel">
+            <div class="nav nav-mark flex-column nav-pills">
+                {% for mark in  marks %}
+                    <a class="btn btn-sm btn-outline-secondary mt-1 mb-1" 
+                    id="mark-{{ mark.id }}" href="#">{{ mark }} </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
 </div>
 
 

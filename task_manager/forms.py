@@ -1,6 +1,4 @@
 from django import forms
-from django.contrib.auth.models import User
-
 from .models import Task, Category, Mark
 
 
@@ -27,12 +25,12 @@ class TaskAddForm(forms.ModelForm):
 
 
 class CategoryAddForm(forms.ModelForm):
-	class Meta:
-		model = Category
-		fields = '__all__'
+    class Meta:
+        model = Category
+        fields = ('name',)
 
 
 class MarkAddForm(forms.ModelForm):
-	class Meta:
-		model = Mark
-		fields = ('name',)
+    class Meta:
+        model = Mark
+        fields = ('name',)
